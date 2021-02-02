@@ -217,6 +217,8 @@ public abstract class BaseDecoder implements IDecoder {
         if (mExtractor != null && mExtractor.getFormat() != null) {
             final MediaFormat format = mExtractor.getFormat();
             mMediaDuration = format.getLong(MediaFormat.KEY_DURATION) / 1000L;
+            mVideoWidth = format.getInteger(MediaFormat.KEY_WIDTH);
+            mVideoHeight = format.getInteger(MediaFormat.KEY_HEIGHT);
             if (mEndPos == 0L) {
                 mEndPos = mMediaDuration;
             }
