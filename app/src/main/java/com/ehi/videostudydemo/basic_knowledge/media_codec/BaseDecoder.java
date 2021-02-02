@@ -83,6 +83,7 @@ public abstract class BaseDecoder implements IDecoder {
         if (mStateListener != null) {
             mStateListener.decoderPrepare(this);
         }
+        //【解码步骤：1. 初始化，并启动解码器】
         if (!init()) {
             return;
         }
@@ -93,18 +94,22 @@ public abstract class BaseDecoder implements IDecoder {
                 waitDecode();
             }
             if (!mIsRunning || mState == DecodeState.STOP) {
-                mIsRunning = false;
                 break;
             }
+            //如果数据没有解码完毕，将数据推入解码器解码
             if (!mIsEOS) {
+                //【解码步骤：2. 将数据压入解码器输入缓冲】
                 mIsEOS = pushBufferToDecoder();
             }
+            //【解码步骤：3. 将解码好的数据从缓冲区拉取出来】
             final int index = pullBufferFromDecoder();
             if (index >= 0) {
                 if (mOutputBuffers != null) {
+                    //【解码步骤：4. 渲染】
                     render(mOutputBuffers[index], mBufferInfo);
                 }
                 if (mCodec != null) {
+                    //【解码步骤：5. 释放输出缓冲】
                     mCodec.releaseOutputBuffer(index, true);
                 }
                 if (mState == DecodeState.START) {
@@ -119,6 +124,7 @@ public abstract class BaseDecoder implements IDecoder {
             }
         }
         doneDecode();
+        //【解码步骤：7. 释放解码器】
         release();
     }
 
